@@ -1,0 +1,170 @@
+/*--common--*/
+body, html {
+    height: 100%;
+    margin: 0;
+}
+/* Font for title:CHINESE TOURISM */
+h1 {
+    font-family: 'Nova Flat';
+}
+/* Font for tagline: Welcome to China */
+h2 {
+    font-family: 'Sofia';
+}
+/* logo */
+.brand img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% / 15);
+    height: auto;
+}
+/*set the style for navbar*/
+.navbar-nav{
+    border: 2px solid #a1a1a1;
+	border-radius: 20px;
+}
+/* Font for navbar */
+.navbar-nav{
+    font-size: 25px; 
+    font-family: 'Open Sans', sans-serif;
+  }
+/* set for background style */
+body{
+  background-image: url("../image/Chinesepicture1.jpg");
+  background-position: center center; 
+  background-repeat: no-repeat; 
+  background-attachment: fixed; 
+  background-size: cover; 
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+/* Font for footer */
+footer {
+    font-family: 'Nova Flat';
+}
+/*responsive design*/
+/* Adjustments for small screens */
+@media (max-width: 767px) {
+
+}
+/* Adjustments for medium screens */
+@media (min-width: 768px) and (max-width: 991px) {
+
+}
+ /* Adjustments for large screens */
+@media (min-width: 992px) {
+   
+}
+
+/*--index--*/
+/*click an image, show some text relating to that image.*/
+#text{
+    font-family: 'Sofia';
+}
+/*set the style for image*/
+.col-sm-4 img{
+    border:2px solid #a1a1a1;
+    border-radius:25px;
+}
+
+/*--booking--*/
+.Bookingform {
+    width: 100%;
+    min-height: 300px;
+    padding: 3%;
+    border: solid 2px black;
+    float: left;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.Bookingform .left {
+    width: 50%;
+    float: left;
+    height: 100%;
+}
+.Bookingform .right {
+    width: 50%;
+    float: right;
+    height: 100%;
+}
+.Bookingform input[type="text"],
+.Bookingform textarea {
+    border: solid 1px #000000;
+    border-radius: 5px;
+    width: 75%;
+    padding: 5px;
+    font-size: 14px;
+}
+.Bookingform textarea {
+    height: 80%;
+    margin-bottom: 5%;
+    resize: none;
+}
+.submit {
+    width: 80px;
+    cursor: pointer;
+}
+.form-control {
+  text-align: center;
+}
+.form-select {
+  text-align-last: center;
+}
+.error {
+  color: red;
+  font-size: 14px;
+}
+.form-control.error {
+  border-color: red;
+}
+
+/*--service--*/
+section {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .service-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+  }
+  .service {
+    flex: 0 1 calc(33.33% - 20px); 
+    margin: 20px;
+    padding: 15px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    transition: transform 0.3s;
+  }
+  .service:hover {
+    transform: scale(1.05);
+  }
+  .service img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  } 
+  .service h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  .service p {
+    font-size: 1rem;
+    color: #666;
+  }
+.service .details {
+    display: none;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+  
