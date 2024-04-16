@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package smartagriculture;
+
+service CropManagementService {
+  rpc irrigateAll(IrrigationRequest) returns (IrrigationResponse);
+  rpc irrigateCrop(IrrigationCropRequest) returns (IrrigationResponse);
+  rpc fertilizeAll(FertilizationRequest) returns (FertilizationResponse);
+  rpc fertilizeCrop(FertilizationCropRequest) returns (FertilizationResponse);
+  rpc sprayPesticidesAll(SprayPesticidesRequest) returns (SprayPesticidesResponse);
+  rpc sprayPesticidesCrop(SprayPesticidesCropRequest) returns (SprayPesticidesResponse);
+}
+
+message IrrigationRequest {
+  int32 irrigationTime = 1;
+}
+
+message IrrigationCropRequest {
+  int32 cropId = 1;
+  int32 irrigationTime = 2;
+}
+
+message IrrigationResponse {
+  string message = 1;
+}
+
+message FertilizationRequest {
+  float fertilizerAmount = 1;
+}
+
+message FertilizationCropRequest {
+  int32 cropId = 1;
+  float fertilizerAmount = 2;
+}
+
+message FertilizationResponse {
+  string message = 1;
+}
+
+message SprayPesticidesRequest {
+  float pesticidesAmount = 1;
+}
+
+message SprayPesticidesCropRequest {
+  int32 cropId = 1;
+  float pesticidesAmount = 2;
+}
+
+message SprayPesticidesResponse {
+  string message = 1;
+}
