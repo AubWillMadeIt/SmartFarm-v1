@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package smartfarming;
+
+import "google/protobuf/empty.proto";  // Importing the empty protocol buffer message
+
+// Message for requesting the status of a crop block
+message CropBlockStatusRequest {
+  // Unique identifier for the crop block
+  int32 blockId = 1;
+}
+
+// Message for representing the status of a crop block
+message CropBlockStatus {
+  int32 blockId = 1;          // Unique identifier for the crop block
+  double lightIntensity = 2;   // Current light intensity in the crop block
+  double humidity = 3;         // Current humidity level in the crop block
+  double soilFertility = 4;    // Current soil fertility level in the crop block
+  bool pestPresence = 5;       // Indicates if pests are present in the crop block
+  double pHLevel = 6;          // Current pH level in the soil of the crop block
+}
+
+// Message for representing the response of analyzing the status of a crop block
+message AnalyzeBlockStatusResponse {
+
+  // Additional message providing details about the analysis of the crop block status
+  string message = 1;
+
+}
+
+// Service for managing crop block statuses
+service CropMonitoringService{
+
+  // RPC method to get the status of a specific crop block
+  rpc GetBlockStatus (CropBlockStatusRequest) returns (CropBlockStatus);
+
+  // RPC method to get the statuses of all crop blocks
+  rpc GetAllStatuses (google.protobuf.Empty) returns (CropAllStatusesResponse);
+
+  // RPC method to analyze the status of a specific crop block
+  rpc AnalyzeBlockStatus (CropBlockStatusRequest) returns (AnalyzeBlockStatusResponse);
+
+  // RPC method to analyze the statuses of all crop blocks
+  rpc AnalyzeAllStatuses (google.protobuf.Empty) returns (AnalyzeAllBlockStatusesResponse);
+}
+
+// Message for representing repeated block statuses
+message CropAllStatusesResponse {
+
+  repeated CropBlockStatus statuses = 1;
+
+}
+
+// Message for representing the response of analyzing all block statuses
+message AnalyzeAllBlockStatusesResponse {
+
+  repeated AnalyzeBlockStatusResponse responses = 1;
+
+}
