@@ -13,8 +13,6 @@ message WaterRequest {
 
 }
 
-
-
 // Message for requesting fertilization for a specific block
 message FertilizeRequest {
 

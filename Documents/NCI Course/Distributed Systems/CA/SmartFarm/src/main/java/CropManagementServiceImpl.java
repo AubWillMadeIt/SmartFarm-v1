@@ -23,13 +23,6 @@ public class CropManagementServiceImpl extends CropManagementServiceGrpc.CropMan
             responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("pH level must be between 0 and 14.").asRuntimeException());
             return;
         }
-
-        FarmEnvironmentSimulator.CropStatus cropStatus = farmEnvironmentSimulator.getBlockStatus(blockId);
-        if(cropStatus==null) {
-            responseObserver.onError(Status.NOT_FOUND.withDescription("BlockId not found: " + blockId).asRuntimeException());
-            return;
-        }
-
         // Implement logic to adjust pH level for a specific block
         farmEnvironmentSimulator.setPhLevel(blockId, pHLevel); // Set pH level for the block
         AdjustResponse response = AdjustResponse.newBuilder()
@@ -47,13 +40,6 @@ public class CropManagementServiceImpl extends CropManagementServiceGrpc.CropMan
             responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Block ID must be a positive integer.").asRuntimeException());
             return;
         }
-
-        FarmEnvironmentSimulator.CropStatus cropStatus = farmEnvironmentSimulator.getBlockStatus(blockId);
-        if(cropStatus==null) {
-            responseObserver.onError(Status.NOT_FOUND.withDescription("BlockId not found: " + blockId).asRuntimeException());
-            return;
-        }
-
         // Implement logic for pest control in a specific block
         // For demonstration purposes, assume success
         // Here you can implement pest control actions like spraying pesticides, etc.
@@ -72,11 +58,6 @@ public class CropManagementServiceImpl extends CropManagementServiceGrpc.CropMan
         double lightIntensity = request.getLightIntensity();
         if (blockId <= 0) {
             responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Block ID must be a positive integer.").asRuntimeException());
-            return;
-        }
-        FarmEnvironmentSimulator.CropStatus cropStatus = farmEnvironmentSimulator.getBlockStatus(blockId);
-        if(cropStatus==null) {
-            responseObserver.onError(Status.NOT_FOUND.withDescription("BlockId not found: " + blockId).asRuntimeException());
             return;
         }
         // Implement logic to adjust light intensity for a specific block

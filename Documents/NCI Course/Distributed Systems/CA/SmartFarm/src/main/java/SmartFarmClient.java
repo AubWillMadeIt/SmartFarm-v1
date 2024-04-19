@@ -111,14 +111,8 @@ public class SmartFarmClient {
                     .build();
             CropBlockStatus status = cropMonitoringStub.getBlockStatus(request);
             System.out.println();
-
-            System.out.println("Crop Block ID: " + status.getBlockId());
-            System.out.println("Light Intensity: " + status.getLightIntensity());
-            System.out.println("Humidity: " + status.getHumidity());
-            System.out.println("Soil Fertility: " + status.getSoilFertility());
-            System.out.println("Pest Presence: " + status.getPestPresence());
-            System.out.println("pH Level: " + status.getPHLevel());
-
+            System.out.println("Crop block status:");
+            System.out.println(status);
         } catch (StatusRuntimeException e) {
             System.out.println();
             System.out.println("Error retrieving crop block status: " + e.getStatus());
