@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package smartfarming;
+
+// Message for requesting water for a specific block
+message WaterRequest {
+
+  // Unique identifier for the block
+  string blockId = 1;
+
+  // Time at which watering is requested
+  string wateringTime = 2;
+
+}
+
+// Message for requesting fertilization for a specific block
+message FertilizeRequest {
+
+  // Unique identifier for the block
+  string blockId = 1;
+
+  // Amount of fertilizer to be applied
+  double fertilizerAmount = 2;
+
+}
+
+// Message for representing the response of an action
+message ActionResponse {
+
+  // Indicates if the action was successful or not
+  bool success = 1;
+
+  // Additional message providing details about the action
+  string message = 2;
+
+}
+
+// Service for managing water and fertilizer actions
+service WaterAndFertilizerService {
+
+  // RPC method to water all blocks
+  rpc WaterAll (WaterRequest) returns (ActionResponse);
+
+  // RPC method to water a specific block
+  rpc WaterBlock (WaterRequest) returns (ActionResponse);
+
+  // RPC method to fertilize all blocks
+  rpc FertilizeAll (FertilizeRequest) returns (ActionResponse);
+
+  // RPC method to fertilize a specific block
+  rpc FertilizeBlock (FertilizeRequest) returns (ActionResponse);
+}

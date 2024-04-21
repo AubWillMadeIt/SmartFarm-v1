@@ -1,63 +1,40 @@
 import io.grpc.stub.StreamObserver;
-import smartagriculture.CropManagementServiceGrpc.*;
-import smartagriculture.CropManagementServiceOuterClass.*;
+import smartfarming.CropManagementServiceGrpc;
+import smartfarming.CropManagementServiceOuterClass.*;
 
-public class CropManagementServiceImpl extends CropManagementServiceImplBase {
+public class CropManagementServiceImpl extends CropManagementServiceGrpc.CropManagementServiceImplBase {
+
     @Override
-    public void irrigateAll(IrrigationRequest request, StreamObserver<IrrigationResponse> responseObserver) {
-        // 实现全部灌溉逻辑
-         IrrigationResponse response = IrrigationResponse.newBuilder()
-                .setMessage("All crops irrigated for " + request.getIrrigationTime() + " minutes.")
+    public void adjustPh(AdjustPhRequest request, StreamObserver<AdjustResponse> responseObserver) {
+        // Implement logic to adjust pH level for a specific block
+        // For demonstration purposes, assume success
+        AdjustResponse response = AdjustResponse.newBuilder()
+                .setSuccess(true)
+                .setMessage("pH level adjusted successfully for block " + request.getBlockId() + " to " + request.getPHLevel())
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
     @Override
-    public void irrigateCrop(IrrigationCropRequest request, StreamObserver<IrrigationResponse> responseObserver) {
-        // 实现单个作物灌溉逻辑
-        IrrigationResponse response = IrrigationResponse.newBuilder()
-                .setMessage("Crop with ID " + request.getCropId() + " irrigated for " + request.getIrrigationTime() + " minutes.")
+    public void pestControl(PestControlRequest request, StreamObserver<AdjustResponse> responseObserver) {
+        // Implement logic for pest control in a specific block
+        // For demonstration purposes, assume success
+        AdjustResponse response = AdjustResponse.newBuilder()
+                .setSuccess(true)
+                .setMessage("Pest control performed successfully for block " + request.getBlockId())
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
     @Override
-    public void fertilizeAll(FertilizationRequest request, StreamObserver<FertilizationResponse> responseObserver) {
-        // 实现全部施肥逻辑
-        FertilizationResponse response = FertilizationResponse.newBuilder()
-                .setMessage("All crops fertilized with amount " + request.getFertilizerAmount())
-                .build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void fertilizeCrop(FertilizationCropRequest request, StreamObserver<FertilizationResponse> responseObserver) {
-        // 实现单个作物施肥逻辑
-        FertilizationResponse response = FertilizationResponse.newBuilder()
-                .setMessage("Crop with ID " + request.getCropId() + " fertilized with amount " + request.getFertilizerAmount())
-                .build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void sprayPesticidesAll(SprayPesticidesRequest request, StreamObserver<SprayPesticidesResponse> responseObserver) {
-        // 实现全部喷洒农药逻辑
-        SprayPesticidesResponse response = SprayPesticidesResponse.newBuilder()
-                .setMessage("All crops sprayed with pesticides amount " + request.getPesticidesAmount())
-                .build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void sprayPesticidesCrop(SprayPesticidesCropRequest request, StreamObserver<SprayPesticidesResponse> responseObserver) {
-        // 实现单个作物喷洒农药逻辑
-        SprayPesticidesResponse response = SprayPesticidesResponse.newBuilder()
-                .setMessage("Crop with ID " + request.getCropId() + " sprayed with pesticides amount " + request.getPesticidesAmount())
+    public void adjustLightIntensity(AdjustLightIntensityRequest request, StreamObserver<AdjustResponse> responseObserver) {
+        // Implement logic to adjust light intensity for a specific block
+        // For demonstration purposes, assume success
+        AdjustResponse response = AdjustResponse.newBuilder()
+                .setSuccess(true)
+                .setMessage("Light intensity adjusted successfully for block " + request.getBlockId() + " to " + request.getLightIntensity())
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
