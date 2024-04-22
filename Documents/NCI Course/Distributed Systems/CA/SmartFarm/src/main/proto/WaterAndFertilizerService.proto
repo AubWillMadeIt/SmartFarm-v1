@@ -6,10 +6,10 @@ package smartfarming;
 message WaterRequest {
 
   // Unique identifier for the block
-  string blockId = 1;
+  int32 blockId = 1;
 
-  // Time at which watering is requested
-  string wateringTime = 2;
+  // Time at which watering is requested, watering time for seconds
+  double wateringTime = 2;
 
 }
 
@@ -17,7 +17,7 @@ message WaterRequest {
 message FertilizeRequest {
 
   // Unique identifier for the block
-  string blockId = 1;
+  int32 blockId = 1;
 
   // Amount of fertilizer to be applied
   double fertilizerAmount = 2;
