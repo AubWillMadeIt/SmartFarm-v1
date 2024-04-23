@@ -97,34 +97,17 @@ public class SmartFarmClient {
 
     private void viewAllCropBlockStatuses() {
         System.out.println("All crop block statuses:");
-        final CountDownLatch finishLatch = new CountDownLatch(1); // 创建一个CountDownLatch实例
+        CropAllStatusesResponse response = cropMonitoringStub.getAllStatuses(Empty.getDefaultInstance());
 
-        StreamObserver<CropBlockStatus> responseObserver = new StreamObserver<CropBlockStatus>() {
-            @Override
-            public void onNext(CropBlockStatus status) {
-                System.out.println("Crop Block ID: " + status.getBlockId());
-                System.out.println("Light Intensity: " + status.getLightIntensity());
-                System.out.println("Humidity: " + status.getHumidity());
-                System.out.println("Soil Fertility: " + status.getSoilFertility());
-                System.out.println("Pest Presence: " + status.getPestPresence());
-                System.out.println("pH Level: " + status.getPHLevel());
-                System.out.println("---------------------------------------------");
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                System.out.println("Error: " + t.getMessage());
-
-            }
-
-            @Override
-            public void onCompleted() {
-                System.out.println("Completed");
-
-            }
-        };
-
-        cropMonitoringStub.getAllStatuses(Empty.newBuilder().build(), responseObserver);
+        for (CropBlockStatus status : response.getStatusesList()) {
+            System.out.println("Crop Block ID: " + status.getBlockId());
+            System.out.println("Light Intensity: " + status.getLightIntensity());
+            System.out.println("Humidity: " + status.getHumidity());
+            System.out.println("Soil Fertility: " + status.getSoilFertility());
+            System.out.println("Pest Presence: " + status.getPestPresence());
+            System.out.println("pH Level: " + status.getPHLevel());
+            System.out.println("---------------------------------------------");
+        }
     }
 
     private void waterSpecificBlock(Scanner scanner) {
