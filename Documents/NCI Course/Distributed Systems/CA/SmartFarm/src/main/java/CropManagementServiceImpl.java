@@ -1,3 +1,4 @@
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import smartfarming.CropManagementServiceGrpc;
 import smartfarming.CropManagementServiceOuterClass.*;
@@ -12,11 +13,21 @@ public class CropManagementServiceImpl extends CropManagementServiceGrpc.CropMan
 
     @Override
     public void adjustPh(AdjustPHRequest request, StreamObserver<AdjustResponse> responseObserver) {
+        int blockId = request.getBlockId();
+        double pHLevel = request.getPHLevel();
+        if (blockId <= 0) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Block ID must be a positive integer.").asRuntimeException());
+            return;
+        }
+        if (pHLevel < 0 || pHLevel > 14) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("pH level must be between 0 and 14.").asRuntimeException());
+            return;
+        }
         // Implement logic to adjust pH level for a specific block
-        farmEnvironmentSimulator.setPhLevel(request.getBlockId(), request.getPHLevel()); // Set pH level for the block
+        farmEnvironmentSimulator.setPhLevel(blockId, pHLevel); // Set pH level for the block
         AdjustResponse response = AdjustResponse.newBuilder()
                 .setSuccess(true)
-                .setMessage("pH level adjusted successfully for block " + request.getBlockId() + " to " + request.getPHLevel())
+                .setMessage("pH level adjusted successfully for block " + blockId + " to " + pHLevel)
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -24,13 +35,18 @@ public class CropManagementServiceImpl extends CropManagementServiceGrpc.CropMan
 
     @Override
     public void pestControl(PestControlRequest request, StreamObserver<AdjustResponse> responseObserver) {
+        int blockId = request.getBlockId();
+        if (blockId <= 0) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Block ID must be a positive integer.").asRuntimeException());
+            return;
+        }
         // Implement logic for pest control in a specific block
         // For demonstration purposes, assume success
         // Here you can implement pest control actions like spraying pesticides, etc.
-        farmEnvironmentSimulator.setPestPresence(request.getBlockId(),false);
+        farmEnvironmentSimulator.setPestPresence(blockId, false);
         AdjustResponse response = AdjustResponse.newBuilder()
                 .setSuccess(true)
-                .setMessage("Pest control performed successfully for block " + request.getBlockId())
+                .setMessage("Pest control performed successfully for block " + blockId)
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -38,11 +54,17 @@ public class CropManagementServiceImpl extends CropManagementServiceGrpc.CropMan
 
     @Override
     public void adjustLightIntensity(AdjustLightIntensityRequest request, StreamObserver<AdjustResponse> responseObserver) {
+        int blockId = request.getBlockId();
+        double lightIntensity = request.getLightIntensity();
+        if (blockId <= 0) {
+            responseObserver.onError(Status.INVALID_ARGUMENT.withDescription("Block ID must be a positive integer.").asRuntimeException());
+            return;
+        }
         // Implement logic to adjust light intensity for a specific block
-        farmEnvironmentSimulator.setLightIntensity(request.getBlockId(), request.getLightIntensity()); // Set light intensity for the block
+        farmEnvironmentSimulator.setLightIntensity(blockId, lightIntensity); // Set light intensity for the block
         AdjustResponse response = AdjustResponse.newBuilder()
                 .setSuccess(true)
-                .setMessage("Light intensity adjusted successfully for block " + request.getBlockId() + " to " + request.getLightIntensity())
+                .setMessage("Light intensity adjusted successfully for block " + blockId + " to " + lightIntensity)
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();

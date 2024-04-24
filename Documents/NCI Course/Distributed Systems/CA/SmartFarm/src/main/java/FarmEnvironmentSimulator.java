@@ -152,46 +152,5 @@ public class FarmEnvironmentSimulator {
         public void setPHLevel(double pHLevel) {
             this.pHLevel = pHLevel;
         }
-
-        // Method to analyze crop status and return status string
-        public String analyzeCropStatus() {
-            StringBuilder status = new StringBuilder();
-
-            // Analyze light intensity
-            if (lightIntensity >= 80 && lightIntensity <= 120) {
-                status.append("Light intensity: Suitable, ");
-            } else if (lightIntensity < 80) {
-                status.append("Light intensity: Low, ");
-            } else {
-                status.append("Light intensity: High, ");
-            }
-
-            // Analyze humidity
-            if (humidity >= 60 && humidity <= 80) {
-                status.append("Humidity: Suitable, ");
-            } else if (humidity < 60) {
-                status.append("Humidity: Low, ");
-            } else {
-                status.append("Humidity: High, ");
-            }
-
-            // Analyze soil fertility
-            if (soilFertility >= 0.6 && soilFertility <= 0.8) {
-                status.append("Soil fertility: Suitable, ");
-            } else if (soilFertility < 0.6) {
-                status.append("Soil fertility: Low, ");
-            } else {
-                status.append("Soil fertility: High, ");
-            }
-
-            // Analyze pest presence
-            if (!pestPresence) {
-                status.append("Pest presence: None");
-            } else {
-                status.append("Pest presence: Present");
-            }
-
-            return status.toString();
-        }
     }
 }
