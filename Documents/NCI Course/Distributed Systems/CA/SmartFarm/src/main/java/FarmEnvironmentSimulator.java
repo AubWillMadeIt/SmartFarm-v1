@@ -1,9 +1,16 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class FarmEnvironmentSimulator {
 
     private List<CropStatus> cropStatusList;
+
+    private ScheduledExecutorService executorService;
+    private static final double MAX_CHANGE_THRESHOLD = 0.5; // Maximum change threshold for each property
 
     // Constructor to initialize the crop status list with 10 blocks
     public FarmEnvironmentSimulator() {
@@ -15,10 +22,12 @@ public class FarmEnvironmentSimulator {
             crop.setLightIntensity(100.0); // Initial light intensity is set to 100.0
             crop.setHumidity(70.0); // Initial humidity is set to 70.0
             crop.setSoilFertility(0.7); // Initial soil fertility is set to 0.7
-            crop.setPestPresence(false); // Initially no pests present
+            crop.setPestPresence(true); // Initially no pests present
             crop.setPHLevel(6.5); // Initial pH level is set to 6.5
             cropStatusList.add(crop);
         }
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(this::simulateEnvironmentChange, 0, 50, TimeUnit.SECONDS);
     }
 
     // Method to get the status of a specific crop block
@@ -89,6 +98,31 @@ public class FarmEnvironmentSimulator {
             cropStatus.setSoilFertility(cropStatus.getSoilFertility() + delta);
         }
     }
+
+    // Method to simulate environment change
+    private void simulateEnvironmentChange() {
+        Random random = new Random();
+        for (CropStatus cropStatus : cropStatusList) {
+            double lightIntensityChange = generateRandomChange(random);
+            double humidityChange = generateRandomChange(random);
+            double soilFertilityChange = generateRandomChange(random);
+            boolean pestPresenceChange = random.nextBoolean();
+            double pHLevelChange = generateRandomChange(random);
+
+            cropStatus.setLightIntensity(cropStatus.getLightIntensity() + lightIntensityChange);
+            cropStatus.setHumidity(cropStatus.getHumidity() + humidityChange);
+            cropStatus.setSoilFertility(cropStatus.getSoilFertility() + soilFertilityChange);
+            cropStatus.setPestPresence(pestPresenceChange);
+            cropStatus.setPHLevel(cropStatus.getPHLevel() + pHLevelChange);
+        }
+    }
+
+    // Method to generate random change within a threshold
+    private double generateRandomChange(Random random) {
+        double change = (random.nextDouble() - 0.5) * MAX_CHANGE_THRESHOLD;
+        return change;
+    }
+
 
     // Inner class representing the status of a crop block
     class CropStatus {

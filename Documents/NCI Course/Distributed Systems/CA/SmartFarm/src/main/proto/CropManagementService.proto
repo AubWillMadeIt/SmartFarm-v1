@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package smartfarming;
+
+// Message for requesting adjustment of pH level for a specific block
+message AdjustPHRequest {
+
+  // Unique identifier for the block
+  int32 blockId = 1;
+
+  // Target pH level
+  double PHLevel = 2;
+}
+
+// Message for requesting pest control for a specific block
+message PestControlRequest {
+
+  // Unique identifier for the block
+   int32 blockId = 1;
+
+}
+
+// Message for requesting adjustment of light intensity for a specific block
+message AdjustLightIntensityRequest {
+
+  // Unique identifier for the block
+  int32 blockId = 1;
+
+  // Target light intensity
+  double lightIntensity = 2;
+}
+
+// Message for representing the response of an adjustment action
+message AdjustResponse {
+
+  // Indicates if the adjustment action was successful or not
+  bool success = 1;
+
+  // Additional message providing details about the adjustment action
+  string message = 2;
+}
+
+// Service for managing crop-related actions
+service CropManagementService {
+
+  // RPC method to adjust pH level for a specific block
+  rpc AdjustPh (AdjustPHRequest) returns (AdjustResponse);
+
+  // RPC method for pest control in a specific block
+  rpc PestControl (PestControlRequest) returns (AdjustResponse);
+
+  // RPC method to adjust light intensity for a specific block
+  rpc AdjustLightIntensity (AdjustLightIntensityRequest) returns (AdjustResponse);
+}

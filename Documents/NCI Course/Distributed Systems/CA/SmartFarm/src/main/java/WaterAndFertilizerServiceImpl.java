@@ -1,3 +1,4 @@
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import smartfarming.WaterAndFertilizerServiceGrpc;
 import smartfarming.WaterAndFertilizerServiceOuterClass.*;
@@ -16,10 +17,12 @@ public class WaterAndFertilizerServiceImpl extends WaterAndFertilizerServiceGrpc
     @Override
     public void waterAll(WaterRequest request, StreamObserver<ActionResponse> responseObserver) {
         try {
+
             // Validate the request
             if (request == null || request.getWateringTime() <= 0) {
                 throw new IllegalArgumentException("Invalid request: wateringTime must be a positive value");
             }
+
             // Implement logic to water all blocks
             // For demonstration purposes, assume success
             farmEnvironmentSimulator.changeAllHumidity(request.getWateringTime() / 10); // Increase humidity based on watering time
@@ -42,6 +45,13 @@ public class WaterAndFertilizerServiceImpl extends WaterAndFertilizerServiceGrpc
             // Validate the request
             if (request == null || request.getBlockId() <= 0 || request.getWateringTime() <= 0) {
                 throw new IllegalArgumentException("Invalid request: blockId must be a positive value, and wateringTime must be a positive value");
+            }
+
+            // block not found
+            FarmEnvironmentSimulator.CropStatus cropStatus = farmEnvironmentSimulator.getBlockStatus(request.getBlockId());
+            if(cropStatus==null) {
+                responseObserver.onError(Status.NOT_FOUND.withDescription("BlockId not found: " + request.getBlockId()).asRuntimeException());
+                return;
             }
             // Implement logic to water a specific block
             // For demonstration purposes, assume success
@@ -89,6 +99,14 @@ public class WaterAndFertilizerServiceImpl extends WaterAndFertilizerServiceGrpc
             if (request == null || request.getBlockId() <= 0 || request.getFertilizerAmount() <= 0) {
                 throw new IllegalArgumentException("Invalid request: blockId must be a positive value, and fertilizerAmount must be a positive value");
             }
+
+            // block not found
+            FarmEnvironmentSimulator.CropStatus cropStatus = farmEnvironmentSimulator.getBlockStatus(request.getBlockId());
+            if(cropStatus==null) {
+                responseObserver.onError(Status.NOT_FOUND.withDescription("BlockId not found: " + request.getBlockId()).asRuntimeException());
+                return;
+            }
+
             // Implement logic to fertilize a specific block
             // For demonstration purposes, assume success
             farmEnvironmentSimulator.changeSoilFertility(request.getBlockId(), request.getFertilizerAmount() * 0.05 ); // Increase soil fertility by the fertilizer amount
