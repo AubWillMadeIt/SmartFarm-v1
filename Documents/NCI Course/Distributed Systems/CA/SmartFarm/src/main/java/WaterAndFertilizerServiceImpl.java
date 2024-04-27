@@ -78,7 +78,7 @@ public class WaterAndFertilizerServiceImpl extends WaterAndFertilizerServiceGrpc
             }
             // Implement logic to fertilize all blocks
             // For demonstration purposes, assume success
-            farmEnvironmentSimulator.changeAllSoilFertility(request.getFertilizerAmount() * 0.05); // Increase soil fertility by the fertilizer amount
+            farmEnvironmentSimulator.changeAllSoilFertility(request.getFertilizerAmount() * 0.5); // Increase soil fertility by the fertilizer amount
             ActionResponse response = ActionResponse.newBuilder()
                     .setSuccess(true)
                     .setMessage("All blocks fertilized successfully with " + request.getFertilizerAmount() + " amount of fertilizer")
@@ -109,7 +109,7 @@ public class WaterAndFertilizerServiceImpl extends WaterAndFertilizerServiceGrpc
 
             // Implement logic to fertilize a specific block
             // For demonstration purposes, assume success
-            farmEnvironmentSimulator.changeSoilFertility(request.getBlockId(), request.getFertilizerAmount() * 0.05 ); // Increase soil fertility by the fertilizer amount
+            farmEnvironmentSimulator.changeSoilFertility(request.getBlockId(), request.getFertilizerAmount() * 0.5 ); // Increase soil fertility by the fertilizer amount
             ActionResponse response = ActionResponse.newBuilder()
                     .setSuccess(true)
                     .setMessage("Block " + request.getBlockId() + " fertilized successfully with " + request.getFertilizerAmount() + " amount of fertilizer")

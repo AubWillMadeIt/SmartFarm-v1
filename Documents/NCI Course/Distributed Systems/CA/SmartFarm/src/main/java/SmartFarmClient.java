@@ -9,24 +9,26 @@ import smartfarming.CropMonitoringServiceGrpc;
 import smartfarming.WaterAndFertilizerServiceOuterClass.*;
 import smartfarming.WaterAndFertilizerServiceGrpc;
 
+import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class SmartFarmClient {
 
-    // gRPC stubs for accessing different services
+    /** gRPC stubs for accessing different services */
     private final CropMonitoringServiceGrpc.CropMonitoringServiceBlockingStub cropMonitoringStub;
     private final WaterAndFertilizerServiceGrpc.WaterAndFertilizerServiceBlockingStub waterAndFertilizerStub;
     private final CropManagementServiceGrpc.CropManagementServiceBlockingStub cropManagementStub;
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    // Constructor to initialize the gRPC stubs
+    /** Constructor to initialize the gRPC stubs */
     public SmartFarmClient(ManagedChannel channel) {
         cropMonitoringStub = CropMonitoringServiceGrpc.newBlockingStub(channel);
         waterAndFertilizerStub = WaterAndFertilizerServiceGrpc.newBlockingStub(channel);
         cropManagementStub = CropManagementServiceGrpc.newBlockingStub(channel);
     }
 
-    // Main method to start the SmartFarmClient
+    /** Main method to start the SmartFarmClient */
     public static void main(String[] args) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 50051)
                 .usePlaintext() // Using plaintext communication (no encryption)
@@ -36,7 +38,7 @@ public class SmartFarmClient {
         channel.shutdown(); // Shut down the gRPC channel when done
     }
 
-    // Method to start the client application
+    /** Method to start the client application */
     private void start() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -101,33 +103,14 @@ public class SmartFarmClient {
         }
     }
 
-    // Method to view the status of a specific crop block
+    /** Method to view the status of a specific crop block */
     private void viewCropBlockStatus(Scanner scanner) {
-        try {
-            System.out.print("Enter block ID: ");
-            int blockId = scanner.nextInt();
-            CropBlockStatusRequest request = CropBlockStatusRequest.newBuilder()
-                    .setBlockId(blockId)
-                    .build();
-            CropBlockStatus status = cropMonitoringStub.getBlockStatus(request);
-            System.out.println();
-
-            System.out.println("Crop Block ID: " + status.getBlockId());
-            System.out.println("Light Intensity: " + status.getLightIntensity());
-            System.out.println("Humidity: " + status.getHumidity());
-            System.out.println("Soil Fertility: " + status.getSoilFertility());
-            System.out.println("Pest Presence: " + status.getPestPresence());
-            System.out.println("pH Level: " + status.getPHLevel());
-
-        } catch (StatusRuntimeException e) {
-            System.out.println();
-            System.out.println("Error retrieving crop block status: " + e.getStatus());
-        } finally {
-            System.out.println();
-        }
+        System.out.print("Enter block ID: ");
+        int blockId = scanner.nextInt();
+        viewCropBlockStatus(blockId);
     }
 
-    // Method to view statuses of all crop blocks
+    /** Method to view statuses of all crop blocks */
     private void viewAllCropBlockStatuses() {
         try {
             System.out.println("All crop block statuses:");
@@ -135,49 +118,61 @@ public class SmartFarmClient {
             System.out.println("");
             for (CropBlockStatus status : response.getStatusesList()) {
                 System.out.println("Crop Block ID: " + status.getBlockId());
-                System.out.println("Light Intensity: " + status.getLightIntensity());
-                System.out.println("Humidity: " + status.getHumidity());
-                System.out.println("Soil Fertility: " + status.getSoilFertility());
+                System.out.println("Light Intensity: " + decimalFormat.format(status.getLightIntensity()));
+                System.out.println("Humidity: " + decimalFormat.format(status.getHumidity()));
+                System.out.println("Soil Fertility: " + decimalFormat.format(status.getSoilFertility()));
                 System.out.println("Pest Presence: " + status.getPestPresence());
-                System.out.println("pH Level: " + status.getPHLevel());
+                System.out.println("pH Level: " + decimalFormat.format(status.getPHLevel()));
                 System.out.println("---------------------------------------------");
             }
             System.out.println();
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error retrieving all crop block statuses: " + e.getStatus());
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
         }finally {
             System.out.println();
         }
     }
 
-    // Method to water a specific block
+    /** Method to water a specific block */
     private void waterSpecificBlock(Scanner scanner) {
+        System.out.print("Enter block ID: ");
+        int blockId = scanner.nextInt();
         try {
-            System.out.print("Enter block ID: ");
-            int blockId = scanner.nextInt();
+
             System.out.print("Enter watering time (seconds): ");
             double wateringTime = scanner.nextDouble();
+
+            /** construct watering request */
             WaterRequest request = WaterRequest.newBuilder()
                     .setBlockId(blockId)
                     .setWateringTime(wateringTime)
                     .build();
             ActionResponse response = waterAndFertilizerStub.waterBlock(request);
+
+            /** construct view status request */
             System.out.println();
             System.out.println(response.getMessage());
+            viewCropBlockStatus(blockId);
+
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error watering specific block: " + e.getStatus());
-        } catch (InputMismatchException e) {
-            System.out.println();
-            System.out.println("Invalid input for block ID or watering time.");
-            scanner.nextLine(); // clear input buffer
-        }finally {
+            if(e.getStatus().getCode().toString().equals("NOT_FOUND")){
+                System.out.println(String.format("Block Id %d not found.",blockId));
+            }
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
+        } finally {
             System.out.println();
         }
     }
 
-    // Method to water all blocks
+    /** Method to water all blocks */
     private void waterAllBlocks(Scanner scanner) {
         try {
             System.out.print("Enter watering time (seconds): ");
@@ -190,21 +185,20 @@ public class SmartFarmClient {
             System.out.println(response.getMessage());
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error watering all blocks: " + e.getStatus());
-        } catch (InputMismatchException e) {
-            System.out.println();
-            System.out.println("Invalid input for watering time.");
-            scanner.nextLine(); // clear input buffer
-        }finally {
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
+        } finally {
             System.out.println();
         }
     }
 
-    // Method to fertilize a specific block
+    /** Method to fertilize a specific block */
     private void fertilizeSpecificBlock(Scanner scanner) {
+        System.out.print("Enter block ID: ");
+        int blockId = scanner.nextInt();
         try {
-            System.out.print("Enter block ID: ");
-            int blockId = scanner.nextInt();
             System.out.print("Enter fertilizer amount: ");
             double fertilizerAmount = scanner.nextDouble();
             FertilizeRequest request = FertilizeRequest.newBuilder()
@@ -214,20 +208,23 @@ public class SmartFarmClient {
             ActionResponse response = waterAndFertilizerStub.fertilizeBlock(request);
             System.out.println();
             System.out.println(response.getMessage());
+            viewCropBlockStatus(blockId);
 
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error fertilizing specific block: " + e.getStatus());
-        } catch (InputMismatchException e) {
-            System.out.println();
-            System.out.println("Invalid input for block ID or fertilizer amount.");
-            scanner.nextLine(); // clear input buffer
-        }finally {
+            if(e.getStatus().getCode().toString().equals("NOT_FOUND")){
+                System.out.println(String.format("Block Id %d not found.",blockId));
+            }
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
+        } finally {
             System.out.println();
         }
     }
 
-    // Method to fertilize all blocks
+    /** Method to fertilize all blocks */
     private void fertilizeAllBlocks(Scanner scanner) {
         try {
             System.out.print("Enter fertilizer amount: ");
@@ -241,21 +238,20 @@ public class SmartFarmClient {
 
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error fertilizing all blocks: " + e.getStatus());
-        } catch (InputMismatchException e) {
-            System.out.println();
-            System.out.println("Invalid input for fertilizer amount.");
-            scanner.nextLine(); // clear input buffer
-        }finally {
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
+        } finally {
             System.out.println();
         }
     }
 
-    // Method to adjust pH level of a specific block
+    /** Method to adjust pH level of a specific block */
     private void adjustPh(Scanner scanner) {
+        System.out.print("Enter block ID: ");
+        int blockId = scanner.nextInt();
         try {
-            System.out.print("Enter block ID: ");
-            int blockId = scanner.nextInt();
             System.out.print("Enter target pH level: ");
             double pHLevel = scanner.nextDouble();
             AdjustPHRequest request = AdjustPHRequest.newBuilder()
@@ -265,24 +261,28 @@ public class SmartFarmClient {
             AdjustResponse response = cropManagementStub.adjustPh(request);
             System.out.println();
             System.out.println(response.getMessage());
+            viewCropBlockStatus(blockId);
 
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error adjusting pH level: " + e.getStatus());
-        } catch (InputMismatchException e) {
-            System.out.println();
-            System.out.println("Invalid input for block ID or pH level.");
-            scanner.nextLine(); // clear input buffer
-        }finally {
+            if(e.getStatus().getCode().toString().equals("NOT_FOUND")){
+                System.out.println(String.format("Block Id %d not found.",blockId));
+            }
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
+        } finally {
             System.out.println();
         }
     }
 
-    // Method to adjust light intensity of a specific block
+    /** Method to adjust light intensity of a specific block */
     private void adjustLightIntensity(Scanner scanner) {
+        System.out.print("Enter block ID: ");
+        int blockId = scanner.nextInt();
         try {
-            System.out.print("Enter block ID: ");
-            int blockId = scanner.nextInt();
+
             System.out.print("Enter target light intensity: ");
             double lightIntensity = scanner.nextDouble();
             AdjustLightIntensityRequest request = AdjustLightIntensityRequest.newBuilder()
@@ -292,48 +292,55 @@ public class SmartFarmClient {
             AdjustResponse response = cropManagementStub.adjustLightIntensity(request);
             System.out.println();
             System.out.println(response.getMessage());
+            viewCropBlockStatus(blockId);
 
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error adjusting light intensity: " + e.getStatus());
-        } catch (InputMismatchException e) {
-            System.out.println();
-            System.out.println("Invalid input for block ID or light intensity.");
-            scanner.nextLine(); // clear input buffer
+            if(e.getStatus().getCode().toString().equals("NOT_FOUND")){
+                System.out.println(String.format("Block Id %d not found.",blockId));
+            }
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
         }finally {
             System.out.println();
         }
     }
 
-    // Method to perform pest control on a specific block
+    /** Method to perform pest control on a specific block */
     private void pestControl(Scanner scanner) {
+        System.out.print("Enter block ID: ");
+        int blockId = scanner.nextInt();
         try {
-            System.out.print("Enter block ID: ");
-            int blockId = scanner.nextInt();
+
             PestControlRequest request = PestControlRequest.newBuilder()
                     .setBlockId(blockId)
                     .build();
             AdjustResponse response = cropManagementStub.pestControl(request);
             System.out.println();
             System.out.println(response.getMessage());
+            viewCropBlockStatus(blockId);
 
         } catch (StatusRuntimeException e) {
             System.out.println();
-            System.out.println("Error performing pest control: " + e.getStatus());
-        } catch (InputMismatchException e) {
-            System.out.println();
-            System.out.println("Invalid input for block ID.");
-            scanner.nextLine(); // clear input buffer
-        }finally {
+            if(e.getStatus().getCode().toString().equals("NOT_FOUND")){
+                System.out.println(String.format("Block Id %d not found.",blockId));
+            }
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
+        } finally {
             System.out.println();
         }
     }
 
-    // Method to analyze the status of a specific crop block
+    /** Method to analyze the status of a specific crop block */
     private void analyzeCropBlockStatus(Scanner scanner) {
+        System.out.print("Enter block ID: ");
+        int blockId = scanner.nextInt();
         try {
-            System.out.print("Enter block ID: ");
-            int blockId = scanner.nextInt();
             CropBlockStatusRequest request = CropBlockStatusRequest.newBuilder()
                     .setBlockId(blockId)
                     .build();
@@ -345,10 +352,46 @@ public class SmartFarmClient {
             System.out.println();
         } catch (StatusRuntimeException e) {
             System.out.println();
+            if(e.getStatus().getCode().toString().equals("NOT_FOUND")){
+                System.out.println(String.format("Block Id %d not found.",blockId));
+            }
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
             System.out.println("Error analyzing crop block status: " + e.getStatus());
-            System.out.println();
         } finally {
             System.out.println();
         }
     }
+
+    /** get crop block status by block id */
+    private void viewCropBlockStatus(int blockId){
+        try {
+            CropBlockStatusRequest request = CropBlockStatusRequest.newBuilder()
+                    .setBlockId(blockId)
+                    .build();
+            CropBlockStatus status = cropMonitoringStub.getBlockStatus(request);
+            System.out.println();
+
+            System.out.println("Crop Block ID: " + status.getBlockId());
+            System.out.println("Light Intensity: " + decimalFormat.format(status.getLightIntensity()));
+            System.out.println("Humidity: " + decimalFormat.format(status.getHumidity()));
+            System.out.println("Soil Fertility: " + decimalFormat.format(status.getSoilFertility()));
+            System.out.println("Pest Presence: " + status.getPestPresence());
+            System.out.println("pH Level: " + decimalFormat.format(status.getPHLevel()));
+
+        } catch (StatusRuntimeException e) {
+            System.out.println();
+            if(e.getStatus().getCode().toString().equals("NOT_FOUND")){
+                System.out.println(String.format("Block Id %d not found.",blockId));
+            }
+            if (e.getStatus().getCode().toString().equals("UNAVAILABLE")){
+                System.out.println(String.format("Connection refused: no further information"));
+            }
+            System.out.println("Error analyzing crop block status: " + e.getStatus());
+        } finally {
+            System.out.println();
+        }
+    }
+
 }
